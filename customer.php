@@ -55,156 +55,117 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <!-- CSS personnalisé -->
+    <link rel="stylesheet" href="css/customer.css">
 </head>
 <body>
     
-<div class="ui container">
+<div class="ui grid container">
 
-<h2 class="ui dividing middle centered header" style="margin: 3rem 0">Tableau des utilisateurs</h2>
+<div class="row">
+    <div class="column">
+        <h2 class="ui dividing middle centered header" style="margin: 3rem 0 0 0 ">Tableau des utilisateurs</h2>
+    </div>
+</div>
 
-<table class="ui striped center aligned celled selectable table">
+<div class="row">
+    <div class="column">
+        <table class="ui striped center aligned celled selectable table">
 
-<?php
+    <?php
 
-try{
+    try{
 
-    /**
-     * On instancie PDO dans notre variable $dbh avec nos constantes définies dans inc/globals.php
-     * @sql : notre requête SQL contenant trois paramètres
-     * @sortName : (string) correspond à la colonne par rapport à laquelle on tri (de base user_id)
-     * @sortBy : (string) correspond à l'ordre de tri (croissant ou décroissant : de base croissant)
-     */
+        /**
+         * On instancie PDO dans notre variable $dbh avec nos constantes définies dans inc/globals.php
+         * @sql : notre requête SQL contenant trois paramètres
+         * @sortName : (string) correspond à la colonne par rapport à laquelle on tri (de base user_id)
+         * @sortBy : (string) correspond à l'ordre de tri (croissant ou décroissant : de base croissant)
+         */
 
-    $dbh = new PDO('mysql:host='.SERVER.';port='.PORT.';dbname='.DBB.';charset=utf8', 
-    USER, 
-    PASS, 
-    PDO_OPTIONS);
+        $dbh = new PDO('mysql:host='.SERVER.';port='.PORT.';dbname='.DBB.';charset=utf8', 
+        USER, 
+        PASS, 
+        PDO_OPTIONS);
 
-    $sql = "SELECT user_id AS code, LOWER(first_name) AS Prénom, role, LOWER(email) AS email, active, last_update AS MAJ FROM customer
-            INNER JOIN user ON user.user_id = customer_id
-            ORDER BY $sortName $sortBy
-            LIMIT $premiereValeur,10";
-    
-    $stmt = $dbh -> prepare($sql);
-    $stmt -> execute();
-    
-    /**
-     * On récupère le nom de chaque colonne de notre requête SQL précédente
-     * @columnCount : (int) correspond au nombre de colonnes liées à notre requête SQL
-     * @column : (string) contient le nom de la colonne $i
-     * @sort : (string) Variable qui permet de toggle l'ordre de tri des colonnes (égal à ASC ou DESC) 
-     * en fonction de l'ordre de tri actuel (donné par @sortBy)
-     */
-    
-    $html = '';
-    
-    $html .= '<thead><tr>';
-    
-    $columnCount = $stmt -> columnCount();
-    for($i = 0; $i < $columnCount; $i++){
-        $column = $stmt -> getColumnMeta($i);
+        $sql = "SELECT user_id AS code, first_name AS Prénom, role, email AS email, active, last_update AS MAJ FROM customer
+                INNER JOIN user ON user.user_id = customer_id
+                ORDER BY $sortName $sortBy
+                LIMIT $premiereValeur,10";
         
-        $sort = $sortBy == 'asc' ? 'desc' : 'asc';
-        $html .= '<th><a href="customer.php?page='.$numeroPage.'&sortName='.$column["name"].'&sortBy='.$sort.'">'.$column["name"].'</a></th>';
-    }
-    $html .= '<th>Modifier</th>';
-    
-    $html.= '</tr></thead>';
-    
-    
-    /**
-     * On récupère les résultats de notre requête et on en affiche un par ligne
-     * @row[x] correspond à la valeur de la x ième colonne de notre requête
-     * 
-     */
-    $html.= '<tbody>';
-    
-    foreach($stmt -> fetchAll(PDO::FETCH_NUM) AS $row){
-        $html .= '<tr>';
+        $stmt = $dbh -> prepare($sql);
+        $stmt -> execute();
+        
+        /**
+         * On récupère le nom de chaque colonne de notre requête SQL précédente
+         * @columnCount : (int) correspond au nombre de colonnes liées à notre requête SQL
+         * @column : (string) contient le nom de la colonne $i
+         * @sort : (string) Variable qui permet de toggle l'ordre de tri des colonnes (égal à ASC ou DESC) 
+         * en fonction de l'ordre de tri actuel (donné par @sortBy)
+         */
+        
+        $html = '';
+        
+        $html .= '<thead><tr>';
+        
+        $columnCount = $stmt -> columnCount();
         for($i = 0; $i < $columnCount; $i++){
-            $html .= '<td>'.$row[$i].'</td>';
+
+            $column = $stmt -> getColumnMeta($i);
+            
+            $sort = $sortBy == 'asc' ? 'desc' : 'asc';
+
+            $html .= '<th><a href="customer.php?page='.$numeroPage.'&sortName='.$column["name"].'&sortBy='.$sort.'">'.$column["name"].'</a></th>';
         }
-        $html .= '<td style="text-align:center;"><a data-id="'.$row[0].'" class="updateUser"><i class="edit outline icon"></i></a></td>';
+        $html .= '<th>Modifier</th>';
         
-        $html .= '</tr>';
-    }
-    
-    $html.= '</tbody>';
-    $html .= '</table>';
-    
-    echo $html; 
-    
-    /**
-     * On crée notre pagination pour naviguer entre les différentes pages de notre tableau
-     * @paginationFin (int) : correspond au nombre max de pages nécessaires pour contenir toutes les données demandée
-     * On affiche différemment notre pagination en fonction de la page sur laquelle on se trouve
-     */
-    
-    $html = '';
-    
-    $html .= '<div class="ui pagination menu">';
-    
-    $stmt = $dbh -> prepare("SELECT * FROM customer");
-    $stmt -> execute();
-    $paginationFin = floor($stmt->rowCount() / 10);
-
-    if($numeroPage < 4){
+        $html.= '</tr></thead>';
         
-        for($i = 1; $i < 5; $i++){
-            $i == $numeroPage ? 
-                $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="active item">'.$i.'</a>' : 
-                $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$i.'</a>';
+        
+        /**
+         * On récupère les résultats de notre requête et on en affiche un par ligne
+         * @row[x] correspond à la valeur de la x ième colonne de notre requête
+         */
+
+        $html.= '<tbody>';
+        
+        foreach($stmt -> fetchAll(PDO::FETCH_NUM) AS $row){
+            $html .= '<tr>';
+            for($i = 0; $i < $columnCount; $i++){
+                $html .= '<td>'.$row[$i].'</td>';
+            }
+            $html .= '<td style="text-align:center;"><a data-id="'.$row[0].'" class="updateUser"><i class="edit outline icon ajax"></i></a></td>';
+            
+            $html .= '</tr>';
         }
+        
+        $html.= '</tbody>';
+        $html .= '</table>';
+        
+        echo $html; 
+        
+        echo '</div>
+        </div>';
 
-        $html .=  '<div class="disabled item">..</div>';
-        $html .=  '<a href="customer.php?page='.$paginationFin.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$paginationFin.'</a>';
+        // On appelle notre fichier pagination.php
+        include_once 'inc/pagination.php';
 
-    }elseif($numeroPage >= 4 && $numeroPage < $paginationFin - 3){
+        // Une fois les données récupérées, on ferme notre instance PDO
+        unset($dbh);
 
-        $html .= '<a href="customer.php?page=1&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">1</a>';
-        $html .=  '<div class="disabled item">..</div>';
+    }catch(PDOException $e){
 
-        for($i = $numeroPage - 1; $i < $numeroPage + 2; $i++){
-            $i == $numeroPage ? 
-                $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="active item">'.$i.'</a>' :
-                $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$i.'</a>';
-        }
+        echo "Erreur PDO !";
 
-        $html .= '<div class="disabled item">..</div>';
-        $html .= '<a href="customer.php?page='.$paginationFin.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$paginationFin.'</a>';
-
-    }else{
-
-        $html .= '<a href="customer.php?page=1&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">1</a>';
-        $html .= '<div class="disabled item">..</div>';
-
-        for($i = $numeroPage - 3; $i <= $paginationFin; $i++){
-            $i == $numeroPage ? 
-                $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="active item">'.$i.'</a>' :
-                $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$i.'</a>';
-        }
     }
 
-    /**
-     * Fin pagination
-     */
-
-    echo $html;
-
-
-}catch(PDOException $e){
-
-    echo "Erreur PDO !";
-
-}
-
-?>
-
+    ?>
+    
 </div>
 
 <!-- 
     Modal pour modifier les utilisateurs
- -->
+-->
  
 <div class="ui modal">
   <i class="close icon"></i>
@@ -220,6 +181,8 @@ try{
     </div>
 </div>
 
+<!-- Javascript personnalisé -->
 <script src="js/customer.js"></script>
+
 </body>
 </html>

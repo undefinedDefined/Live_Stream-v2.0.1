@@ -7,7 +7,7 @@ $(document).ready(function(){
    
       // requête Ajax
       $.ajax({
-       url: 'customer_update.php',
+       url: 'customer_info.php',
        type: 'post',
        data: {id: userid},
        success: function(response){ 

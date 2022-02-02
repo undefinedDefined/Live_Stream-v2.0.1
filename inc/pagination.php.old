@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * On crée notre pagination pour naviguer entre les différentes pages de notre tableau
+ * @paginationFin (int) : correspond au nombre max de pages nécessaires pour contenir toutes les données demandée
+ * On affiche différemment notre pagination en fonction de la page sur laquelle on se trouve
+ */
+
+$html = '';
+
+$html .= '<div class="ui pagination menu">';
+
+$stmt = $dbh -> prepare("SELECT * FROM customer");
+$stmt -> execute();
+$paginationFin = floor($stmt->rowCount() / 10);
+
+if($numeroPage < 4){
+    $numeroPage == 1 ?
+    $html .=  '<a class="icon item disabled "><i class="left chevron icon"></i></a>' :
+    $html .=  '<a class="icon item" href="customer.php?page='.($numeroPage-1).'&sortName='.$sortName.'&sortBy='.$sortBy.'"><i class="left chevron icon"></i></a>';
+    
+    for($i = 1; $i < 5; $i++){
+        $i == $numeroPage ? 
+            $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="active item">'.$i.'</a>' : 
+            $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$i.'</a>';
+    }
+
+    $html .=  '<div class="disabled item">..</div>';
+    $html .=  '<a href="customer.php?page='.$paginationFin.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$paginationFin.'</a>';
+    $html .=  '<a class="icon item" href="customer.php?page='.($numeroPage+1).'&sortName='.$sortName.'&sortBy='.$sortBy.'"><i class="right chevron icon"></i></a>';
+
+}elseif($numeroPage >= 4 && $numeroPage < $paginationFin - 3){
+
+    $html .=  '<a class="icon item" href="customer.php?page='.($numeroPage-1).'&sortName='.$sortName.'&sortBy='.$sortBy.'"><i class="left chevron icon"></i></a>';
+    $html .= '<a href="customer.php?page=1&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">1</a>';
+    $html .=  '<div class="disabled item">..</div>';
+
+    for($i = $numeroPage - 1; $i < $numeroPage + 2; $i++){
+        $i == $numeroPage ? 
+            $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="active item">'.$i.'</a>' :
+            $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$i.'</a>';
+    }
+
+    $html .= '<div class="disabled item">..</div>';
+    $html .= '<a href="customer.php?page='.$paginationFin.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$paginationFin.'</a>';
+    $html .=  '<a class="icon item" href="customer.php?page='.($numeroPage+1).'&sortName='.$sortName.'&sortBy='.$sortBy.'"><i class="right chevron icon"></i></a>';
+
+
+}else{
+
+    $html .=  '<a class="icon item" href="customer.php?page='.($numeroPage-1).'&sortName='.$sortName.'&sortBy='.$sortBy.'"><i class="left chevron icon"></i></a>';
+    $html .= '<a href="customer.php?page=1&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">1</a>';
+    $html .= '<div class="disabled item">..</div>';
+
+    for($i = $numeroPage - 3; $i <= $paginationFin; $i++){
+        $i == $numeroPage ? 
+            $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="active item">'.$i.'</a>' :
+            $html .= '<a href="customer.php?page='.$i.'&sortName='.$sortName.'&sortBy='.$sortBy.'" class="item">'.$i.'</a>';
+    }
+    $numeroPage == $paginationFin ? 
+    $html .=  '<a class="icon item disabled"><i class="right chevron icon"></i></a>' :
+    $html .=  '<a class="icon item" href="customer.php?page='.($numeroPage+1).'&sortName='.$sortName.'&sortBy='.$sortBy.'"><i class="right chevron icon"></i></a>';
+}
+
+echo $html;
+
+/**
+ * Fin pagination
+ */
