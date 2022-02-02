@@ -17,7 +17,7 @@ Ce répertoire sera mis à jour avec des commentaires dans chaque fichier.
 
 ## Langages et technologies utilisés
 + PHP 7.x
-+ SQL (MySQL/MariaDB)
++ MySQL
 + HTML5
 + CSS3 (Semantic UI)
 + Ajax/ jQuery
