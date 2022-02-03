@@ -11,7 +11,7 @@ if($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['HTTP_HOST'] === '127.0.0.1
     define('SERVER', 'localhost' );
     define('DBB', 'colombes');
     define('USER', 'root');
-    define('PASS', 'greta');
+    define('PASS', '');
     define('PORT', '3306');
 
     // Gestion des erreurs Apache (local uniquement)

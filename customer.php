@@ -49,7 +49,7 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Live Stream : Utilisateurs</title>
 
       <!-- Scripts Semantic-UI et jQuery -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
@@ -69,8 +69,9 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
 </div>
 
 <?php
+
 /**
- * On récupère le code d'état des Insert/ Update
+ * On récupère le code d'état des Insert/ Update dans la cas d'une requête GET
  */
 
 if(isset($_GET['code']) && !empty($_GET['code']) || isset($_GET['code']) && $_GET['code'] === '0'){
@@ -103,7 +104,6 @@ if(isset($_GET['code']) && !empty($_GET['code']) || isset($_GET['code']) && $_GE
     }
 
 }
-
 
 ?>
 
@@ -197,7 +197,7 @@ if(isset($_GET['code']) && !empty($_GET['code']) || isset($_GET['code']) && $_GE
 
     }catch(PDOException $e){
 
-        echo "Erreur PDO !";
+        echo '<p> Échec de la connexion : ' . $e->getMessage() . '</p>';
 
     }
 
@@ -209,30 +209,44 @@ if(isset($_GET['code']) && !empty($_GET['code']) || isset($_GET['code']) && $_GE
     Modal pour modifier les utilisateurs
 -->
  
-<div class="ui modal updateUser">
+<div class="ui coupled modal" id="updateUser">
   <i class="close icon"></i>
     <div class="header">
         Informations utilisateur 
     </div>
-    <div class="ajax content">
-        <!-- Formulaire client inséré grâce à Ajax -->
+    <div class="content">
+        <!-- résultat de customer_info.php via notre requête Ajax -->
     </div>
     <div class="actions">
-        <div class="ui negative close button">Annuler</div>
-        <div class="ui positive submit button" id="submitUpdate">Modifier</div>
+        <div class="ui close button">Annuler</div>
+        <button class="ui primary right labeled icon submit button" id="submitUpdateUser">
+            <i class="right arrow icon"></i>
+            Modifier
+        </button>
     </div>
 </div>
 
-<!-- 
-    Modal pour voir les locations de chaque utilisateur
--->
+<!-- Modal confirmation modification utilisateur -->
 
-<div class="ui modal viewLoc">
+<div class="ui coupled mini modal" id="confirmUpdateUser">
+  <div class="header">Modification utilisateur</div>
+  <div class="content">
+    <p>Etes vous sûr de vouloir modifier cet utilisateur ?</p>
+  </div>
+  <div class="actions">
+    <div class="ui negative cancel button">Annuler</div>
+    <div class="ui positive approve button">Confirmer</div>
+  </div>
+</div>
+
+<!-- Modal pour voir les locations de chaque utilisateur -->
+
+<div class="ui modal" id="viewLoc">
   <i class="close icon"></i>
     <div class="header">
         Locations utilisateur 
     </div>
-    <div class="ajax scrolling content">
+    <div class="scrolling content">
        <!-- Liste des emprunts inséré grâce à Ajax -->
     </div>
     <div class="actions">
@@ -241,8 +255,10 @@ if(isset($_GET['code']) && !empty($_GET['code']) || isset($_GET['code']) && $_GE
 </div>
 
 
-<!-- Javascript personnalisé -->
-<script src="js/customer.js"></script>
+<!-- Javascript personnalisé : choisir la méthode voulue (changer également dans customer_info.php) -->
+
+<!-- <script src="js/customer.js"></script> -->
+<script src="js/customer_ajax.js"></script>
 
 </body>
 </html>

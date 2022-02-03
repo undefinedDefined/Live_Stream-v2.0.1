@@ -40,11 +40,11 @@ try{
 
     if($stateInsert){
 
-        header('location: customer.php?code=1');
+        header('location: customer.php?page=1&sortName=user_id&sortBy=asc&code=1');
 
     }else{
 
-        header('location: customer.php?code=0');
+        header('location: customer.php?page=1&sortName=user_id&sortBy=asc&code=0');
     }
     
 
@@ -52,6 +52,6 @@ try{
 
 }catch(PDOException $e){
 
-    echo 'Probleme PDO !';
+    echo '<p> Échec de la connexion : ' . $e->getMessage() . '</p>';
 
 }
