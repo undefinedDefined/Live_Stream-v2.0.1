@@ -44,7 +44,7 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr-FR">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -68,6 +68,45 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
     </div>
 </div>
 
+<?php
+/**
+ * On récupère le code d'état des Insert/ Update
+ */
+
+if(isset($_GET['code']) && !empty($_GET['code']) || isset($_GET['code']) && $_GET['code'] === '0'){
+    switch($_GET['code']){
+        case 0 :
+            $col = 'warning';
+            $header = 'Une erreur s\'est produite.';
+            $msg = 'La modification a echoué. Veuillez réessayer.';
+            break;
+        case 1 :
+            $col = 'success';
+            $header = 'Succès';
+            $msg = 'Modifications effectuées avec succès';
+            break;
+    }
+
+    if(isset($col) && isset($msg)){
+        echo '    
+          <div class="row">
+            <div class="column">
+              <div class="ui '.$col.' message">
+                  <i class="close icon"></i>
+              <div class="header">
+                  '.$header.'
+              </div>
+                  '.$msg.'
+              </div>
+            </div>
+          </div>';
+    }
+
+}
+
+
+?>
+
 <div class="row">
     <div class="column">
         <table class="ui striped center aligned celled selectable table">
@@ -88,8 +127,9 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
         PASS, 
         PDO_OPTIONS);
 
-        $sql = "SELECT user_id AS code, first_name AS Prénom, role, email AS email, active, last_update AS MAJ FROM customer
-                INNER JOIN user ON user.user_id = customer_id
+        $sql = "SELECT user_id AS code, first_name AS Prénom, role, email AS email, active, last_update AS MAJ
+                FROM customer
+                    INNER JOIN user ON user.user_id = customer_id
                 ORDER BY $sortName $sortBy
                 LIMIT $premiereValeur,10";
         
@@ -116,8 +156,9 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
             $sort = $sortBy == 'asc' ? 'desc' : 'asc';
 
             $html .= '<th><a href="customer.php?page='.$numeroPage.'&sortName='.$column["name"].'&sortBy='.$sort.'">'.$column["name"].'</a></th>';
-        }
+         }
         $html .= '<th>Modifier</th>';
+        $html .= '<th>Locations</th>';
         
         $html.= '</tr></thead>';
         
@@ -134,7 +175,8 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
             for($i = 0; $i < $columnCount; $i++){
                 $html .= '<td>'.$row[$i].'</td>';
             }
-            $html .= '<td style="text-align:center;"><a data-id="'.$row[0].'" class="updateUser"><i class="edit outline icon ajax"></i></a></td>';
+            $html .= '<td style="text-align:center;"><i data-id="'.$row[0].'" class="updateUser edit outline icon ajax"></i></td>';
+            $html .= '<td style="text-align:center;"><i data-id="'.$row[0].'" class="viewLoc eye icon ajax"></i></td>';
             
             $html .= '</tr>';
         }
@@ -167,7 +209,7 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
     Modal pour modifier les utilisateurs
 -->
  
-<div class="ui modal">
+<div class="ui modal updateUser">
   <i class="close icon"></i>
     <div class="header">
         Informations utilisateur 
@@ -176,10 +218,28 @@ if(isset($_GET['sortName']) && !empty($_GET['sortName']) && in_array(strtolower(
         <!-- Formulaire client inséré grâce à Ajax -->
     </div>
     <div class="actions">
-        <div class="ui button submit">Submit</div>
-        <div class="ui button">Cancel</div>
+        <div class="ui negative close button">Annuler</div>
+        <div class="ui positive submit button" id="submitUpdate">Modifier</div>
     </div>
 </div>
+
+<!-- 
+    Modal pour voir les locations de chaque utilisateur
+-->
+
+<div class="ui modal viewLoc">
+  <i class="close icon"></i>
+    <div class="header">
+        Locations utilisateur 
+    </div>
+    <div class="ajax scrolling content">
+       <!-- Liste des emprunts inséré grâce à Ajax -->
+    </div>
+    <div class="actions">
+        <div class="ui close button">Fermer</div>
+    </div>
+</div>
+
 
 <!-- Javascript personnalisé -->
 <script src="js/customer.js"></script>

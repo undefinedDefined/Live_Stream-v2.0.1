@@ -79,7 +79,7 @@ if(isset($_SESSION['role']) && !empty($_SESSION['role'])){
                 </div>
 
                 <div class="ui labeled button" <?php echo  $role == 5 ? '' : 'style="display:none"'; ?>>
-                  <a class="ui inverted primary button" href="#">
+                  <a class="ui inverted primary button" href="customer.php">
                     <i class="pencil icon"></i>
                     Utilisateur
                   </a>

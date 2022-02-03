@@ -15,8 +15,8 @@ $stmt -> execute();
  * Variables utiles pour la mise en place de la pagination 
  * @paginationFin (int) : le numéro de page maximum en fonction des valeurs à afficher
  * PAGINATION_RANGE (int) : constante qui définit le nombre total de boutons à afficher dans la pagination
- * Remarque :   PAGINATION_RANGE (paire) => pagination avec 1 bouton de plus que demandé
- *              PAGINATION_RANGE (impaire) = > pagination exacte
+ * Remarque :   si PAGINATION_RANGE (paire) => pagination avec 1 bouton de plus que demandé (correspondant au bouton page active)
+ *              si PAGINATION_RANGE (impaire) = > pagination exacte
  * 
  * @paginationSide (int) : correspond au nombre de boutons à afficher de chaque côté du bouton de page active
  * @paginationLimit (int) : correspond au bouton de page active 
@@ -29,8 +29,8 @@ $paginationLimit = $paginationSide + 1;
 
 $html .= '<div class="three column stackable row">';
 
-// Colonne vide pour la mise en page responsive
-$html .= '<div class="three wide column"></div>';
+    // Colonne vide pour la mise en page responsive
+    $html .= '<div class="three wide column"></div>';
 
     // Colonne contenant notre pagination
     $html .= '<div class="ten wide column center aligned">';
