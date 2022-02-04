@@ -10,7 +10,7 @@ Ce répertoire sera mis à jour avec des commentaires dans chaque fichier.
 - [x] Pagination dynamique pour la page customer
 - [x] Tri personnalisé des utilisateurs
 - [x] Afficher les informations détaillées d'un utilisateur via Ajax
-- [ ] Modifier les informations des utilisateurs (en cours) 
+- [x] Modifier les informations des utilisateurs
 - [ ] Page movies qui affiche les films, avec une description
 - [ ] Afficher le détail des films au clic
 - [ ] Permettre d'ajouter
