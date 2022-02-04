@@ -26,3 +26,4 @@ Ce répertoire sera mis à jour avec des commentaires dans chaque fichier.
 + setTimeOut pour les alertes en version Ajax plutôt que le bouton close
 + définir les règles de validation du formulaire Update
 + Ajouter un bouton 'Supprimer' pour delete les utilisateurs
++ tri personnalisé pour le tableau des locations
